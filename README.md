@@ -4,3 +4,12 @@ The idea here is that if you are planning a significant vacation in advance and 
 you may wish you had planned your trip at another date.  This app will help you predict the weather for your
 desired destination in advance and then change the date to better align with your weather desires.  So, the 
 idea is __**whether or not**__ you shoud go to that destination on a given date __or switch it to another date__.  A little play on words.....yes, we know the difference between weather and whether ;-)
+
+# technologies
+- python
+- django
+- APIs
+  - Translate city location to long/lat 
+  - Dark Sky (Time Machine) historical data
+- pandas
+- sklearn (scikit-learn)
