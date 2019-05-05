@@ -11,4 +11,11 @@
   <a href="{% url 'login' %}">Log In</a> |
   <a href="{% url 'signup' %}">Sign Up</a>
 {% endif %} {% endcomment %}
+  <h1>Welcome to Whether or Not.....</h1>
+    <div id="banner">
+    <div id="cloud-scroll">
+      {% block body_content %}
+      {% endblock body_content %}
+    </div>
+  </div>
 {% endblock content %}
