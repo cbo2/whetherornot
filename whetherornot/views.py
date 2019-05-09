@@ -48,11 +48,37 @@ class HomePageView(TemplateView):
 
 class SignUpView(FormView):
     form_class = CustomLocationForm
-    success_url = reverse_lazy('hello')
+    # success_url = reverse_lazy('hello')
     template_name = 'home.html'
+
+    def form_valid(self, form):
+        print('----------- form_valid --------------')
+        # form.got_it()
+        print('--------------- form_valid internal start ------------')
+        location = form.cleaned_data['location']
+        date = form.cleaned_data['date']
+        print('date is: ', date)
+        print('--------------- form_valid internal end ------------')
+        print('context_data: ', self.get_context_data()['form'])
+        context = {
+            'date': date,
+            'location': location,
+        }
+        # return render(self.request, 'result.html', self.get_context_data())
+        return render(self.request, 'result.html', context)
+
+    # class Meta():
+        # return(super().form_valid(form))
+    # def post(self, request, *args, **kwargs):
+    #     data = request.GET.copy()
+    #     print('******* ', data.get('date'))
+    #     return super(self, request)
 
 def hello(request):
     print('------------->>>> hit the hello function again!!')
+    # data = request.GET.copy()
+    # print('******* ', data.get('date'))
+    # print('====>>>> date: ', request.POST['date'])
     # result = requests.get('https://api.darksky.net/forecast/93d657f3bdf48bc91d9977b8e970f9dc/37.4467,25.3289,255657600?units=us&exclude=currently,flags')
     result = requests.get('https://api.darksky.net/forecast/93d657f3bdf48bc91d9977b8e970f9dc/37.4467,25.3289,1998-06-30T15:00:00?units=us&exclude=currently,flags')
     # print(type(result.json()['daily']['data']))
