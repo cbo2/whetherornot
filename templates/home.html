@@ -14,7 +14,18 @@
     <div id="banner">
       <div id="cloud-scroll">
         <h1 align="center">Welcome to Whether or Not</h1>
+        <br><br><br><br>
         {% block body_content %}
+          <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Check Weather" />
+            {% comment %} <p alig="center">
+              <label for="id_location">Location:</label>
+              <textarea name="location" id="id_location" required></textarea>
+              <input type="submit" value="Check Weather" />
+            </p> {% endcomment %}
+          </form>
         {% endblock body_content %}
       </div>
   </div>

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.edit import  FormView, CreateView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
 import requests
@@ -6,10 +7,41 @@ import pandas as pd
 from pandas.io.json import json_normalize
 import json
 
+from django import forms
+class LocationForm(forms.Form):
+    location = forms.CharField(max_length=100)
+
 # Create your views here.
+# class HomePageView(CreateView):
+#     # print('==========> HomePageView ======================')
+  
+#     def get(self, request, *args, **kwargs):
+#         print('------------------------ LocationForm.get!! ---------------')
+#         context = {'form': LocationForm()}
+#         return render(request, 'home.html', context)
+
+#     def form_valid(self, request, *args, **kwargs):
+#         form = LocationForm(request.POST)
+#         if form.is_valid():
+#             print('------------------------ LocationForm is valid!! ---------------')
+#             # return HttpResponseRedirect(reverse_lazy)
+#         return render(request, 'home.html', {'form': form})
+        
+
+# class HomePageView(FormView):
+#     # print('==========> HomePageView ======================')
+#     template_name = 'home.html'
+#     form_class = LocationForm
+#     success_url = '/hello/'
+
+#     def form_valid(self, form):
+#         context = super(HomePageView.self).get_context_data(*args, **kwargs)
+#         print('==========> HomePageView.form_valid ======================')
+#         return super(HomePageView, self).form_valid(form)
+
 class HomePageView(TemplateView):
-    print('==========> HomePageView ======================')
-    template_name = 'home.html'
+    # print('==========> HomePageView ======================')
+     template_name = 'home.html'
 
 def hello(request):
     print('------------->>>> hit the hello function again!!')
