@@ -8,12 +8,12 @@
   <p><a href="{% url 'logout' %}">Log Out</a></p>
 {% else %}
   <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a> |
+  <a href="{% url 'login' %}">Log In</a> |  
   <a href="{% url 'signup' %}">Sign Up</a>
 {% endif %} {% endcomment %}
-    <div id="banner">
-      <div id="cloud-scroll">
-        <h1 align="center">Welcome to Whether or Not</h1>
+    {% comment %} <div id="banner"> {% endcomment %}
+      {% comment %} <div id="cloud-scroll"> {% endcomment %}
+        <h1 align="center">Welcome</h1>
         <br><br><br><br>
         {% block body_content %}
           <form action="" method="post">
@@ -27,6 +27,6 @@
             </p> {% endcomment %}
           </form>
         {% endblock body_content %}
-      </div>
-  </div>
+      {% comment %} </div> {% endcomment %}
+  {% comment %} </div> {% endcomment %}
 {% endblock content %}

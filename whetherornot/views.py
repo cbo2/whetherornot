@@ -2,10 +2,13 @@ from django.shortcuts import render
 from django.views.generic.edit import  FormView, CreateView
 from django.views.generic import TemplateView
 from django.http import HttpResponse
+from django.urls import reverse_lazy
 import requests
 import pandas as pd
 from pandas.io.json import json_normalize
 import json
+from .forms import CustomLocationForm
+
 
 from django import forms
 class LocationForm(forms.Form):
@@ -42,6 +45,11 @@ class LocationForm(forms.Form):
 class HomePageView(TemplateView):
     # print('==========> HomePageView ======================')
      template_name = 'home.html'
+
+class SignUpView(FormView):
+    form_class = CustomLocationForm
+    success_url = reverse_lazy('hello')
+    template_name = 'home.html'
 
 def hello(request):
     print('------------->>>> hit the hello function again!!')
