@@ -61,10 +61,12 @@ class SignUpView(FormView):
         print('--------------- form_valid internal end ------------')
         print('context_data: ', self.get_context_data()['form'])
         context = {
-            'date': date,
             'location': location,
+            'date': date,
         }
         # return render(self.request, 'result.html', self.get_context_data())
+        result = hello(context)
+        context['predicted_temp'] = result
         return render(self.request, 'result.html', context)
 
     # class Meta():
@@ -74,8 +76,11 @@ class SignUpView(FormView):
     #     print('******* ', data.get('date'))
     #     return super(self, request)
 
-def hello(request):
+# def hello(request):
+def hello(context):
+    loc, date = context['location'], context['date']
     print('------------->>>> hit the hello function again!!')
+    print(f'on entry got a location of: {loc} and date of: {date}')
     # data = request.GET.copy()
     # print('******* ', data.get('date'))
     # print('====>>>> date: ', request.POST['date'])
@@ -221,7 +226,8 @@ def hello(request):
     print('----------------------dataframe start----------------------------------')
     print(df)
     print('----------------------dataframe end------------------------------------')
-    return HttpResponse(f'\
-        <h1>gotcha!!!</h1>\
-        <p>high temp average over 20 years:  {df["temperatureHigh"].mean()}</p>\
-    ')
+    # return HttpResponse(f'\
+    #     <h1>gotcha!!!</h1>\
+    #     <p>high temp average over 20 years:  {df["temperatureHigh"].mean()}</p>\
+    # ')
+    return df['temperatureHigh'].mean()
