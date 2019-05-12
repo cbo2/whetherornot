@@ -9,6 +9,11 @@ from pandas.io.json import json_normalize
 import json
 from .forms import CustomLocationForm
 
+import requests
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
+from datetime import timedelta, datetime as dt
+
 
 from django import forms
 class LocationForm(forms.Form):
@@ -65,8 +70,59 @@ class SignUpView(FormView):
             'date': date,
         }
         # return render(self.request, 'result.html', self.get_context_data())
-        result = hello(context)
-        context['predicted_temp'] = result
+        df = pd.DataFrame()
+        data_dict = {}
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        future = asyncio.ensure_future(hit_weather_api_and_populate_dataframe(location, date, data_dict))
+        loop.run_until_complete(future) 
+        print('--------------------------******************--------------------------')
+        print(data_dict)
+        print('--------------------------******************--------------------------')
+
+        df = pd.DataFrame.from_dict(data_dict, orient='index')
+        df = df.drop(
+            ['apparentTemperatureMaxTime', 
+            'apparentTemperatureMinTime',
+            'dewPoint',
+            'icon',
+            'moonPhase',
+            'pressure',
+            'summary',
+            'temperatureMaxTime',
+            'temperatureMinTime',
+            'time',
+            'uvIndex',
+            'uvIndexTime',
+            'windBearing',
+            'apparentTemperatureHighTime',
+            'apparentTemperatureLowTime',
+            'temperatureHighTime',
+            'temperatureLowTime',
+            'windGustTime',
+            'precipIntensity',
+            'precipIntensityMax',
+            'visibility',
+            'sunriseTime',
+            'sunsetTime',
+            ], axis=1)
+        print(f'shape is: {df.shape}')
+        print(f'columns (after cleanup) are: {df.columns}')
+        print(f'description is: \n{df.describe()}')
+        print(f'the "temperatureHigh" Series: \n{df["temperatureHigh"]}')
+
+        print('----------------------dataframe start----------------------------------')
+        print(df)
+        print('goofy groupby temphigh = ', df.groupby('temperatureHigh').mean())
+        print('----------------------dataframe end------------------------------------')
+
+
+
+
+
+
+        # result = hello(context)
+        context['predicted_temp'] = df['temperatureHigh'].mean()
         return render(self.request, 'result.html', context)
 
     # class Meta():
@@ -75,6 +131,70 @@ class SignUpView(FormView):
     #     data = request.GET.copy()
     #     print('******* ', data.get('date'))
     #     return super(self, request)
+
+def fetch_from_api(session, param):
+    base_url = 'https://api.darksky.net/forecast/93d657f3bdf48bc91d9977b8e970f9dc/37.4467,25.3289,'
+    with session.get(base_url + param) as response:
+        data = response.json()['daily']['data'][0]
+        if response.status_code != 200:
+            print("FAILURE::{0}".format(url))
+
+        # time_completed_at = "{:5.2f}s".format(elapsed)
+        # print("{0:<30} {1:>20}".format(param, time_completed_at))
+        year = param[:4]
+        monthday = param[5:10]
+        print(f'****************** >> year: {year} monthday: {monthday} << ******************')
+        return (data, year, monthday)
+
+async def hit_weather_api_and_populate_dataframe(location, target_date, data_dict):
+    print('=====================================')
+    # print(f'original date is: {date}')
+    # target_date = dt.strptime(date, '%Y-%m-%d')
+    print('dt is : ', target_date)
+    date_minus_a_week = target_date - timedelta(days=7)
+    print('original minus a week :', date_minus_a_week)
+    print('the month is:', date_minus_a_week.month)
+    print('the day is: ', date_minus_a_week.day)
+    print('the year is: ', date_minus_a_week.year)  
+    print('=====================================')
+    params = [
+        (
+            str(year) + '-06-30T15:00:00?units=us&exclude=currently,flags'
+        )
+        for year in range(1998, 2018)
+    ]
+    minus_a_week = [
+        (
+            str(year) + '-05-30T15:00:00?units=us&exclude=currently,flags'
+        )
+        for year in range(1998, 2018)
+    ]
+    params.extend(minus_a_week)
+    print('*************************** params ************************')
+    print(params)
+    print('*************************** params ************************')
+    print("{0:<30} {1:>20}".format("File", "Completed at"))
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        with requests.Session() as session:
+            # Set any session parameters here before calling `fetch_from_api`
+            loop = asyncio.get_event_loop()
+            tasks = [
+                loop.run_in_executor(
+                    executor,
+                    fetch_from_api,
+                    *(session, param) # Allows us to pass in multiple arguments to `fetch_from_api`
+                )
+                for param in params
+            ]
+            for num, response in enumerate(await asyncio.gather(*tasks), start = 1):
+                print(f'------------------ {num} --------------------')
+                resp_data, resp_year, resp_monthday = response
+                print(type(resp_data))
+                print(resp_year)
+                print(resp_monthday)
+                # need to add the response to the data_dict keyed by year...need monthday also
+                resp_data['monthday'] = resp_monthday
+                data_dict[resp_year] = resp_data
 
 # def hello(request):
 def hello(context):
@@ -282,7 +402,8 @@ def hello(context):
     print(f'description is: \n{df2.describe()}')
     print(f'the "temperatureHigh" Series: \n{df2["temperatureHigh"]}')
 
-    print('----------------------dataframe start----------------------------------')
+    print('----------------------dataframe2 start----------------------------------')
     print(df2)
-    print('----------------------dataframe end------------------------------------')
+    print('goofy groupby temphigh = ', df2.groupby('temperatureHigh').mean())
+    print('----------------------dataframe2 end------------------------------------')
     return df2['temperatureHigh'].mean()
