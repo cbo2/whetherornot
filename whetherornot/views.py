@@ -122,7 +122,9 @@ class SignUpView(FormView):
 
 
         # result = hello(context)
-        context['predicted_temp'] = df['temperatureHigh'].mean()
+        
+        # f string format f'{value:{width}.{precision}}'
+        context['predicted_temp'] = f"{df['temperatureHigh'].mean():3.0f}"
         return render(self.request, 'result.html', context)
 
     # class Meta():
@@ -135,23 +137,34 @@ class SignUpView(FormView):
 def fetch_from_api(session, param):
     base_url = 'https://api.darksky.net/forecast/93d657f3bdf48bc91d9977b8e970f9dc/37.4467,25.3289,'
     with session.get(base_url + param) as response:
-        data = response.json()['daily']['data'][0]
         if response.status_code != 200:
-            print("FAILURE::{0}".format(url))
-
-        # time_completed_at = "{:5.2f}s".format(elapsed)
-        # print("{0:<30} {1:>20}".format(param, time_completed_at))
-        year = param[:4]
-        monthday = param[5:10]
-        print(f'****************** >> year: {year} monthday: {monthday} << ******************')
-        return (data, year, monthday)
+            print("FAILURE::{0}".format(base_url + param))
+        try:
+            data = response.json()['daily']['data'][0]
+    
+            # time_completed_at = "{:5.2f}s".format(elapsed)
+            # print("{0:<30} {1:>20}".format(param, time_completed_at))
+            year = param[:4]
+            monthday = param[5:10]
+            print(f'****************** >> year: {year} monthday: {monthday} << ******************')
+            return (data, year, monthday)
+        except Exception as e:
+            print(f'..........EXCEPTION with {param} !!!!')
+            print(e, type(e))
+        # return (data, year, monthday)
 
 async def hit_weather_api_and_populate_dataframe(location, target_date, data_dict):
     print('=====================================')
     # print(f'original date is: {date}')
     # target_date = dt.strptime(date, '%Y-%m-%d')
+    today = dt.now()
+    print(f'******************* year is: {today.year} and the type is: {type(today.year)} ****************')
+    from_year = today.year - 21
+    to_year = today.year - 1
+    print(f'******************* from year: {from_year} and to year: {to_year} ****************')
     print('dt is : ', target_date)
     date_minus_a_week = target_date - timedelta(days=7)
+    date_plus_a_week = target_date + timedelta(days=7)
     print('original minus a week :', date_minus_a_week)
     print('the month is:', date_minus_a_week.month)
     print('the day is: ', date_minus_a_week.day)
@@ -159,17 +172,24 @@ async def hit_weather_api_and_populate_dataframe(location, target_date, data_dic
     print('=====================================')
     params = [
         (
-            str(year) + '-06-30T15:00:00?units=us&exclude=currently,flags'
+            str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
         )
-        for year in range(1998, 2018)
+        for year in range(from_year, to_year)
     ]
     minus_a_week = [
         (
-            str(year) + '-05-30T15:00:00?units=us&exclude=currently,flags'
+            str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
         )
-        for year in range(1998, 2018)
+        for year in range(from_year, to_year)
     ]
     params.extend(minus_a_week)
+    plus_a_week = [
+        (
+            str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+        )
+        for year in range(from_year, to_year)
+    ]
+    params.extend(plus_a_week)
     print('*************************** params ************************')
     print(params)
     print('*************************** params ************************')
@@ -187,14 +207,18 @@ async def hit_weather_api_and_populate_dataframe(location, target_date, data_dic
                 for param in params
             ]
             for num, response in enumerate(await asyncio.gather(*tasks), start = 1):
-                print(f'------------------ {num} --------------------')
-                resp_data, resp_year, resp_monthday = response
-                print(type(resp_data))
-                print(resp_year)
-                print(resp_monthday)
-                # need to add the response to the data_dict keyed by year...need monthday also
-                resp_data['monthday'] = resp_monthday
-                data_dict[resp_year] = resp_data
+                try:
+                    print(f'------------------ {num} --------------------')
+                    resp_data, resp_year, resp_monthday = response
+                    print(type(resp_data))
+                    print(resp_year)
+                    print(resp_monthday)
+                    # need to add the response to the data_dict keyed by year...need monthday also
+                    resp_data['monthday'] = resp_monthday
+                    data_dict[resp_year] = resp_data
+                except Exception as e:
+                    print('caught Exception on response from fetch!')
+                    print(e, type(e))
 
 # def hello(request):
 def hello(context):
