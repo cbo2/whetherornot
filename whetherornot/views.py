@@ -11,12 +11,12 @@ import json
 from .forms import CustomLocationForm
 import os
 from django.conf import settings
+import geocoder
 
 import requests
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta, datetime as dt
-
 
 from django import forms
 class LocationForm(forms.Form):
@@ -59,15 +59,21 @@ class SignUpView(FormView):
     # success_url = reverse_lazy('hello')
     template_name = 'home.html'
     dark_sky = os.environ["DARK_SKY"]
+    geocoder_key = os.environ["GOOGLE_GEOCODE_KEY"]
 
     def form_valid(self, form):
         print('----------- form_valid --------------')
         print(settings.MEDIA_ROOT + '/image.png')
+ 
         # return
         print(f'the key for darksky is: {self.dark_sky}')
         # form.got_it()
         print('--------------- form_valid internal start ------------')
         location = form.cleaned_data['location']
+        result = geocoder.google(location, key=self.geocoder_key)
+        print(f'lat is: {result.lat}  long is: {result.lng}')
+        longitude = result.lng
+        latitude = result.lat
         date = form.cleaned_data['date']
         print('date is: ', date)
         print('--------------- form_valid internal end ------------')
@@ -81,7 +87,7 @@ class SignUpView(FormView):
         data_dict = {}
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        future = asyncio.ensure_future(self.hit_weather_api_and_populate_dataframe(location, date, data_dict))
+        future = asyncio.ensure_future(self.hit_weather_api_and_populate_dataframe(latitude, longitude, date, data_dict))
         loop.run_until_complete(future) 
         print('--------------------------******************--------------------------')
         print(data_dict)
@@ -154,8 +160,8 @@ class SignUpView(FormView):
     #     print('******* ', data.get('date'))
     #     return super(self, request)
 
-    def fetch_from_api(self, session, param):
-        base_url = f'https://api.darksky.net/forecast/{self.dark_sky}/37.4467,25.3289,'
+    def fetch_from_api(self, session, param, latitude, longitude):
+        base_url = f'https://api.darksky.net/forecast/{self.dark_sky}/{latitude},{longitude},'
         with session.get(base_url + param) as response:
             if response.status_code != 200:
                 print("FAILURE::{0}".format(base_url + param))
@@ -173,7 +179,7 @@ class SignUpView(FormView):
                 print(e, type(e))
             # return (data, year, monthday)
 
-    async def hit_weather_api_and_populate_dataframe(self, location, target_date, data_dict):
+    async def hit_weather_api_and_populate_dataframe(self, latitude, longitude, target_date, data_dict):
         print('=====================================')
         # print(f'original date is: {date}')
         # target_date = dt.strptime(date, '%Y-%m-%d')
@@ -223,7 +229,7 @@ class SignUpView(FormView):
                     loop.run_in_executor(
                         executor,
                         self.fetch_from_api,
-                        *(session, param) # Allows us to pass in multiple arguments to `fetch_from_api`
+                        *(session, param, latitude, longitude) # Allows us to pass in multiple arguments to `fetch_from_api`
                     )
                     for param in params
                 ]

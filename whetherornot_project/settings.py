@@ -131,6 +131,7 @@ LOGOUT_REDIRECT_URL = 'home'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 DARK_SKY = os.environ['DARK_SKY']
+GOOGLE_GEOCODE_KEY = os.environ['GOOGLE_GEOCODE_KEY']
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
