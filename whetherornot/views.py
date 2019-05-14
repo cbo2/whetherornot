@@ -91,7 +91,6 @@ class SignUpView(FormView):
         loop.run_until_complete(future) 
         print('--------------------------******************--------------------------')
         print(data_dict)
-        print('--------------------------******************--------------------------')
 
         df = pd.DataFrame.from_dict(data_dict, orient='index')
         df = df.drop(
@@ -119,6 +118,8 @@ class SignUpView(FormView):
             'sunriseTime',
             'sunsetTime',
             ], axis=1)
+        print(df)
+        print('--------------------------******************--------------------------')
         print(f'shape is: {df.shape}')
         print(f'columns (after cleanup) are: {df.columns}')
         print(f'description is: \n{df.describe()}')
@@ -203,7 +204,7 @@ class SignUpView(FormView):
                 str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
             # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(2014, 2017)
         ]
         minus_a_week = [
             (
@@ -246,7 +247,7 @@ class SignUpView(FormView):
                         print(resp_monthday)
                         # need to add the response to the data_dict keyed by year...need monthday also
                         resp_data['monthday'] = resp_monthday
-                        data_dict[resp_monthday] = resp_data
+                        data_dict[num] = resp_data
                     except Exception as e:
                         print('caught Exception on response from fetch!')
                         print(e, type(e))
