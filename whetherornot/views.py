@@ -133,6 +133,8 @@ class SignUpView(FormView):
         # ser = series.mean().plot(kine='bar')
         # print(f'@@@@@@@@@@ ser type is {type(series)} {type(ser)}')
         # fig = ser.get_figure()
+        print(f'after dataframe')
+        print(df.groupby(['monthday'])['temperatureHigh'].mean())
         fig = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar').get_figure()
         # image_file = os.path.join(os.path.dirname(__file__), 'static/images/' + 'path_to_figure.png')
         image_file = settings.MEDIA_ROOT + '/image.png'
@@ -203,20 +205,22 @@ class SignUpView(FormView):
             # for year in range(from_year, to_year)
             for year in range(2016, 2017)
         ]
-        # minus_a_week = [
-        #     (
-        #         str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
-        #     )
-        #     for year in range(from_year, to_year)
-        # ]
-        # params.extend(minus_a_week)
-        # plus_a_week = [
-        #     (
-        #         str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
-        #     )
-        #     for year in range(from_year, to_year)
-        # ]
-        # params.extend(plus_a_week)
+        minus_a_week = [
+            (
+                str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+            )
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
+        ]
+        params.extend(minus_a_week)
+        plus_a_week = [
+            (
+                str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+            )
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
+        ]
+        params.extend(plus_a_week)
         print('*************************** params ************************')
         print(params)
         print('*************************** params ************************')
@@ -242,7 +246,7 @@ class SignUpView(FormView):
                         print(resp_monthday)
                         # need to add the response to the data_dict keyed by year...need monthday also
                         resp_data['monthday'] = resp_monthday
-                        data_dict[resp_year] = resp_data
+                        data_dict[resp_monthday] = resp_data
                     except Exception as e:
                         print('caught Exception on response from fetch!')
                         print(e, type(e))
