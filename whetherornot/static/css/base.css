@@ -1,5 +1,5 @@
 h1 {
-  color: black;
+  color: blue;
 }
 
 #banner {
@@ -22,22 +22,31 @@ h1 {
     -o-animation: 900000s backgroundScroll infinite linear;
     -ms-animation: 900000s backgroundScroll infinite linear;
     animation: 900000s backgroundScroll infinite linear;
-  }
+}
 
-  @-webkit-keyframes backgroundScroll {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: -99999999px 0;
-    }
+img {
+  opacity: 0.8;
+  width: 40%;
+}
+
+img:hover {
+  opacity: 1.0;
+}
+
+@-webkit-keyframes backgroundScroll {
+  from {
+    background-position: 0 0;
   }
-  
-  @keyframes backgroundScroll {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: -99999999px 0;
-    }
+  to {
+    background-position: -99999999px 0;
   }
+}
+
+@keyframes backgroundScroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -99999999px 0;
+  }
+}

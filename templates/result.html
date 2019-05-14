@@ -8,9 +8,14 @@
     {% block body_content %}
         {% csrf_token %}
         <h2>Date is:  {{ date     }}</h2>
-        <h2>Location is:  {{ location }}</h2>
+        <h2>Location is:  {{ location | capfirst }}</h2>
         <h2>Predicted temp is:  {{ predicted_temp }}</h2>
         <br><br>
-        <img src="{{MEDIA_URL}}{{ image }}" alt="weather plot">
+        <span>
+            <img src="{{MEDIA_URL}}{{ temp_image }}">
+            <img src="{{MEDIA_URL}}{{ wind_image }}">
+            <img src="{{MEDIA_URL}}{{ precip_image }}">
+            <img src="{{MEDIA_URL}}{{ cloudcover_image }}">
+        </span>
     {% endblock body_content %}
 {% endblock content %}

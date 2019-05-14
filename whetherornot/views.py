@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 import requests
 import pandas as pd
 from pandas.io.json import json_normalize
-import matplotlib
+from matplotlib import pyplot as plt
 import json
 from .forms import CustomLocationForm
 import os
@@ -127,6 +127,7 @@ class SignUpView(FormView):
 
         print('----------------------dataframe start----------------------------------')
         print(df)
+        print('----------------------dataframe end------------------------------------')
         # ser = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar')
         # series = df.groupby(['monthday'])['temperatureHigh']
         # series = df['temperatureHigh']
@@ -135,25 +136,55 @@ class SignUpView(FormView):
         # print(f'@@@@@@@@@@ ser type is {type(series)} {type(ser)}')
         # fig = ser.get_figure()
         print(f'after dataframe')
-        print(df.groupby(['monthday'])['temperatureHigh'].mean())
+
+        # high temp bar graph
+        # print(df.groupby(['monthday'])['temperatureHigh'].mean())
         fig = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar').get_figure()
-        # image_file = os.path.join(os.path.dirname(__file__), 'static/images/' + 'path_to_figure.png')
-        image_file = settings.MEDIA_ROOT + '/image.png'
-        # image_file = '/media/whetherornot/' + 'path_to_figure.png'
-        fig.savefig(image_file)  # saves the current figure
-        print('----------------------dataframe end------------------------------------')
-        print('1: ', os.path.dirname(__file__))
-        print('2: ', os.path.dirname('path_to_figure.pdf'))
+        temp_image_filename = 'temp_image.png'
+        temp_image_file = settings.MEDIA_ROOT + f'/{temp_image_filename}'
+        plt.xlabel('Week Of');
+        plt.ylabel('Temperature');
+        plt.title('High Temp');
+        fig.savefig(temp_image_file, transparent=True)  # saves the current figure
 
+        # wind line graph
+        plt.clf()       # first need to clear the plot
+        wind_image_filename = 'wind_image.png'
+        wind_image_file = settings.MEDIA_ROOT + f'/{wind_image_filename}'
+        fig2 = df.groupby(['monthday'])['windGust'].mean().plot(kind='line').get_figure()
+        plt.xlabel('Week Of');
+        plt.ylabel('Wind');
+        plt.title('Wind Speed');
+        fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
 
+        # precip bar graph
+        plt.clf()       # first need to clear the plot
+        precip_image_filename = 'precip_image.png'
+        precip_image_file = settings.MEDIA_ROOT + f'/{precip_image_filename}'
+        fig2 = df.groupby(['monthday'])['precipProbability'].mean().plot(kind='bar').get_figure()
+        plt.xlabel('Week Of');
+        plt.ylabel('Precipitation');
+        plt.title('Precipitation');
+        fig2.savefig(precip_image_file, transparent=True)  # saves the current figure
 
-
+        # cloudcover line graph
+        plt.clf()       # first need to clear the plot
+        cloudcover_image_filename = 'cloudcover_image.png'
+        cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
+        fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
+        plt.xlabel('Week Of');
+        plt.ylabel('Cloud Cover');
+        plt.title('Cloudiness');
+        fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
 
         # result = hello(context)
         
         # f string format f'{value:{width}.{precision}}'
         context['predicted_temp'] = f"{df['temperatureHigh'].mean():3.0f}"
-        context['image'] = 'image.png'
+        context['temp_image'] = temp_image_filename
+        context['wind_image'] = wind_image_filename
+        context['precip_image'] = precip_image_filename
+        context['cloudcover_image'] = cloudcover_image_filename
         return render(self.request, 'result.html', context)
 
     # class Meta():
@@ -193,7 +224,9 @@ class SignUpView(FormView):
         print(f'******************* from year: {from_year} and to year: {to_year} ****************')
         print('dt is : ', target_date)
         date_minus_a_week = target_date - timedelta(days=7)
+        date_minus_2_weeks = target_date - timedelta(days=14)
         date_plus_a_week = target_date + timedelta(days=7)
+        date_plus_2_weeks = target_date + timedelta(days=14)
         print('original minus a week :', date_minus_a_week)
         print('the month is:', date_minus_a_week.month)
         print('the day is: ', date_minus_a_week.day)
@@ -214,6 +247,14 @@ class SignUpView(FormView):
             for year in range(2016, 2017)
         ]
         params.extend(minus_a_week)
+        minus_2_weeks = [
+            (
+                str(year) + '-' + str(date_minus_2_weeks.month).zfill(2) + '-' + str(date_minus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+            )
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
+        ]
+        params.extend(minus_2_weeks)
         plus_a_week = [
             (
                 str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
@@ -222,6 +263,14 @@ class SignUpView(FormView):
             for year in range(2016, 2017)
         ]
         params.extend(plus_a_week)
+        plus_2_weeks = [
+            (
+                str(year) + '-' + str(date_plus_2_weeks.month).zfill(2) + '-' + str(date_plus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+            )
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
+        ]
+        params.extend(plus_2_weeks)
         print('*************************** params ************************')
         print(params)
         print('*************************** params ************************')
