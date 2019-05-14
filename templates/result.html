@@ -10,5 +10,7 @@
         <h2>Date is:  {{ date     }}</h2>
         <h2>Location is:  {{ location }}</h2>
         <h2>Predicted temp is:  {{ predicted_temp }}</h2>
+        <br><br>
+        <img src="{{MEDIA_URL}}{{ image }}" alt="weather plot">
     {% endblock body_content %}
 {% endblock content %}

@@ -6,8 +6,11 @@ from django.urls import reverse_lazy
 import requests
 import pandas as pd
 from pandas.io.json import json_normalize
+import matplotlib
 import json
 from .forms import CustomLocationForm
+import os
+from django.conf import settings
 
 import requests
 import asyncio
@@ -55,9 +58,13 @@ class SignUpView(FormView):
     form_class = CustomLocationForm
     # success_url = reverse_lazy('hello')
     template_name = 'home.html'
+    dark_sky = os.environ["DARK_SKY"]
 
     def form_valid(self, form):
         print('----------- form_valid --------------')
+        print(settings.MEDIA_ROOT + '/image.png')
+        # return
+        print(f'the key for darksky is: {self.dark_sky}')
         # form.got_it()
         print('--------------- form_valid internal start ------------')
         location = form.cleaned_data['location']
@@ -74,7 +81,7 @@ class SignUpView(FormView):
         data_dict = {}
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        future = asyncio.ensure_future(hit_weather_api_and_populate_dataframe(location, date, data_dict))
+        future = asyncio.ensure_future(self.hit_weather_api_and_populate_dataframe(location, date, data_dict))
         loop.run_until_complete(future) 
         print('--------------------------******************--------------------------')
         print(data_dict)
@@ -99,7 +106,7 @@ class SignUpView(FormView):
             'apparentTemperatureLowTime',
             'temperatureHighTime',
             'temperatureLowTime',
-            'windGustTime',
+            # 'windGustTime',
             'precipIntensity',
             'precipIntensityMax',
             'visibility',
@@ -113,9 +120,21 @@ class SignUpView(FormView):
 
         print('----------------------dataframe start----------------------------------')
         print(df)
-        print('goofy groupby temphigh = ', df.groupby('temperatureHigh').mean())
+        # ser = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar')
+        # series = df.groupby(['monthday'])['temperatureHigh']
+        # series = df['temperatureHigh']
+        # ser = series.hist()
+        # ser = series.mean().plot(kine='bar')
+        # print(f'@@@@@@@@@@ ser type is {type(series)} {type(ser)}')
+        # fig = ser.get_figure()
+        fig = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar').get_figure()
+        # image_file = os.path.join(os.path.dirname(__file__), 'static/images/' + 'path_to_figure.png')
+        image_file = settings.MEDIA_ROOT + '/image.png'
+        # image_file = '/media/whetherornot/' + 'path_to_figure.png'
+        fig.savefig(image_file)  # saves the current figure
         print('----------------------dataframe end------------------------------------')
-
+        print('1: ', os.path.dirname(__file__))
+        print('2: ', os.path.dirname('path_to_figure.pdf'))
 
 
 
@@ -125,6 +144,7 @@ class SignUpView(FormView):
         
         # f string format f'{value:{width}.{precision}}'
         context['predicted_temp'] = f"{df['temperatureHigh'].mean():3.0f}"
+        context['image'] = 'image.png'
         return render(self.request, 'result.html', context)
 
     # class Meta():
@@ -134,91 +154,92 @@ class SignUpView(FormView):
     #     print('******* ', data.get('date'))
     #     return super(self, request)
 
-def fetch_from_api(session, param):
-    base_url = 'https://api.darksky.net/forecast/93d657f3bdf48bc91d9977b8e970f9dc/37.4467,25.3289,'
-    with session.get(base_url + param) as response:
-        if response.status_code != 200:
-            print("FAILURE::{0}".format(base_url + param))
-        try:
-            data = response.json()['daily']['data'][0]
-    
-            # time_completed_at = "{:5.2f}s".format(elapsed)
-            # print("{0:<30} {1:>20}".format(param, time_completed_at))
-            year = param[:4]
-            monthday = param[5:10]
-            print(f'****************** >> year: {year} monthday: {monthday} << ******************')
-            return (data, year, monthday)
-        except Exception as e:
-            print(f'..........EXCEPTION with {param} !!!!')
-            print(e, type(e))
-        # return (data, year, monthday)
+    def fetch_from_api(self, session, param):
+        base_url = f'https://api.darksky.net/forecast/{self.dark_sky}/37.4467,25.3289,'
+        with session.get(base_url + param) as response:
+            if response.status_code != 200:
+                print("FAILURE::{0}".format(base_url + param))
+            try:
+                data = response.json()['daily']['data'][0]
+        
+                # time_completed_at = "{:5.2f}s".format(elapsed)
+                # print("{0:<30} {1:>20}".format(param, time_completed_at))
+                year = param[:4]
+                monthday = param[5:10]
+                print(f'****************** >> year: {year} monthday: {monthday} << ******************')
+                return (data, year, monthday)
+            except Exception as e:
+                print(f'..........EXCEPTION with {param} !!!!')
+                print(e, type(e))
+            # return (data, year, monthday)
 
-async def hit_weather_api_and_populate_dataframe(location, target_date, data_dict):
-    print('=====================================')
-    # print(f'original date is: {date}')
-    # target_date = dt.strptime(date, '%Y-%m-%d')
-    today = dt.now()
-    print(f'******************* year is: {today.year} and the type is: {type(today.year)} ****************')
-    from_year = today.year - 21
-    to_year = today.year - 1
-    print(f'******************* from year: {from_year} and to year: {to_year} ****************')
-    print('dt is : ', target_date)
-    date_minus_a_week = target_date - timedelta(days=7)
-    date_plus_a_week = target_date + timedelta(days=7)
-    print('original minus a week :', date_minus_a_week)
-    print('the month is:', date_minus_a_week.month)
-    print('the day is: ', date_minus_a_week.day)
-    print('the year is: ', date_minus_a_week.year)  
-    print('=====================================')
-    params = [
-        (
-            str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
-        )
-        for year in range(from_year, to_year)
-    ]
-    minus_a_week = [
-        (
-            str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
-        )
-        for year in range(from_year, to_year)
-    ]
-    params.extend(minus_a_week)
-    plus_a_week = [
-        (
-            str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
-        )
-        for year in range(from_year, to_year)
-    ]
-    params.extend(plus_a_week)
-    print('*************************** params ************************')
-    print(params)
-    print('*************************** params ************************')
-    print("{0:<30} {1:>20}".format("File", "Completed at"))
-    with ThreadPoolExecutor(max_workers=20) as executor:
-        with requests.Session() as session:
-            # Set any session parameters here before calling `fetch_from_api`
-            loop = asyncio.get_event_loop()
-            tasks = [
-                loop.run_in_executor(
-                    executor,
-                    fetch_from_api,
-                    *(session, param) # Allows us to pass in multiple arguments to `fetch_from_api`
-                )
-                for param in params
-            ]
-            for num, response in enumerate(await asyncio.gather(*tasks), start = 1):
-                try:
-                    print(f'------------------ {num} --------------------')
-                    resp_data, resp_year, resp_monthday = response
-                    print(type(resp_data))
-                    print(resp_year)
-                    print(resp_monthday)
-                    # need to add the response to the data_dict keyed by year...need monthday also
-                    resp_data['monthday'] = resp_monthday
-                    data_dict[resp_year] = resp_data
-                except Exception as e:
-                    print('caught Exception on response from fetch!')
-                    print(e, type(e))
+    async def hit_weather_api_and_populate_dataframe(self, location, target_date, data_dict):
+        print('=====================================')
+        # print(f'original date is: {date}')
+        # target_date = dt.strptime(date, '%Y-%m-%d')
+        today = dt.now()
+        print(f'******************* year is: {today.year} and the type is: {type(today.year)} ****************')
+        from_year = today.year - 20
+        to_year = today.year 
+        print(f'******************* from year: {from_year} and to year: {to_year} ****************')
+        print('dt is : ', target_date)
+        date_minus_a_week = target_date - timedelta(days=7)
+        date_plus_a_week = target_date + timedelta(days=7)
+        print('original minus a week :', date_minus_a_week)
+        print('the month is:', date_minus_a_week.month)
+        print('the day is: ', date_minus_a_week.day)
+        print('the year is: ', date_minus_a_week.year)  
+        print('=====================================')
+        params = [
+            (
+                str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+            )
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
+        ]
+        # minus_a_week = [
+        #     (
+        #         str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+        #     )
+        #     for year in range(from_year, to_year)
+        # ]
+        # params.extend(minus_a_week)
+        # plus_a_week = [
+        #     (
+        #         str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
+        #     )
+        #     for year in range(from_year, to_year)
+        # ]
+        # params.extend(plus_a_week)
+        print('*************************** params ************************')
+        print(params)
+        print('*************************** params ************************')
+        print("{0:<30} {1:>20}".format("File", "Completed at"))
+        with ThreadPoolExecutor(max_workers=20) as executor:
+            with requests.Session() as session:
+                # Set any session parameters here before calling `fetch_from_api`
+                loop = asyncio.get_event_loop()
+                tasks = [
+                    loop.run_in_executor(
+                        executor,
+                        self.fetch_from_api,
+                        *(session, param) # Allows us to pass in multiple arguments to `fetch_from_api`
+                    )
+                    for param in params
+                ]
+                for num, response in enumerate(await asyncio.gather(*tasks), start = 1):
+                    try:
+                        print(f'------------------ {num} --------------------')
+                        resp_data, resp_year, resp_monthday = response
+                        print(type(resp_data))
+                        print(resp_year)
+                        print(resp_monthday)
+                        # need to add the response to the data_dict keyed by year...need monthday also
+                        resp_data['monthday'] = resp_monthday
+                        data_dict[resp_year] = resp_data
+                    except Exception as e:
+                        print('caught Exception on response from fetch!')
+                        print(e, type(e))
 
 # def hello(request):
 def hello(context):
