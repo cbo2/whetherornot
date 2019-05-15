@@ -71,6 +71,10 @@ class SignUpView(FormView):
         print('--------------- form_valid internal start ------------')
         location = form.cleaned_data['location']
         result = geocoder.google(location, key=self.geocoder_key)
+        print(f'full geocoder output: \n{dir(result)}')
+        print('\n\naddress_components: ', result.geojson['features'][0]['properties']['address'])
+        location = result.geojson['features'][0]['properties']['address']
+        print(f'full geocoder output: \n{result.location}')
         print(f'lat is: {result.lat}  long is: {result.lng}')
         longitude = result.lng
         latitude = result.lat
@@ -90,6 +94,8 @@ class SignUpView(FormView):
         future = asyncio.ensure_future(self.hit_weather_api_and_populate_dataframe(latitude, longitude, date, data_dict))
         loop.run_until_complete(future) 
         print('--------------------------******************--------------------------')
+        print('keys only==> ', data_dict.keys())
+        print('value for 1 only==> ', data_dict[1])
         print(data_dict)
 
         df = pd.DataFrame.from_dict(data_dict, orient='index')
@@ -151,8 +157,8 @@ class SignUpView(FormView):
         plt.clf()       # first need to clear the plot
         wind_image_filename = 'wind_image.png'
         wind_image_file = settings.MEDIA_ROOT + f'/{wind_image_filename}'
-        fig2 = df.groupby(['monthday'])['windGust'].mean().plot(kind='line').get_figure()
-        plt.xlabel('Week Of');
+        fig2 = df.groupby(['monthday'])['windSpeed'].mean().plot(kind='line').get_figure()
+        plt.xlabel('');
         plt.ylabel('Wind');
         plt.title('Wind Speed');
         fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
@@ -172,7 +178,7 @@ class SignUpView(FormView):
         cloudcover_image_filename = 'cloudcover_image.png'
         cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
         fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
-        plt.xlabel('Week Of');
+        plt.xlabel('');
         plt.ylabel('Cloud Cover');
         plt.title('Cloudiness');
         fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
@@ -194,7 +200,7 @@ class SignUpView(FormView):
     #     print('******* ', data.get('date'))
     #     return super(self, request)
 
-    def fetch_from_api(self, session, param, latitude, longitude):
+    def fetch_from_weather_api(self, session, param, latitude, longitude):
         base_url = f'https://api.darksky.net/forecast/{self.dark_sky}/{latitude},{longitude},'
         with session.get(base_url + param) as response:
             if response.status_code != 200:
@@ -232,43 +238,48 @@ class SignUpView(FormView):
         print('the day is: ', date_minus_a_week.day)
         print('the year is: ', date_minus_a_week.year)  
         print('=====================================')
+        # use a list comprehension to establish 20 years worth of query params for the target date
         params = [
             (
                 str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2014, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2014, 2017)
         ]
+        # use a list comprehension to establish 20 years worth of query params for the target date minus a week
         minus_a_week = [
             (
                 str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(minus_a_week)
+        # use a list comprehension to establish 20 years worth of query params for the target date minus 2 weeks
         minus_2_weeks = [
             (
                 str(year) + '-' + str(date_minus_2_weeks.month).zfill(2) + '-' + str(date_minus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(minus_2_weeks)
+        # use a list comprehension to establish 20 years worth of query params for the target date plus a week
         plus_a_week = [
             (
                 str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(plus_a_week)
+        # use a list comprehension to establish 20 years worth of query params for the target date plus 2 weeks
         plus_2_weeks = [
             (
                 str(year) + '-' + str(date_plus_2_weeks.month).zfill(2) + '-' + str(date_plus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(plus_2_weeks)
         print('*************************** params ************************')
@@ -277,13 +288,13 @@ class SignUpView(FormView):
         print("{0:<30} {1:>20}".format("File", "Completed at"))
         with ThreadPoolExecutor(max_workers=20) as executor:
             with requests.Session() as session:
-                # Set any session parameters here before calling `fetch_from_api`
+                # Set any session parameters here before calling `fetch_from_weather_api`
                 loop = asyncio.get_event_loop()
                 tasks = [
                     loop.run_in_executor(
                         executor,
-                        self.fetch_from_api,
-                        *(session, param, latitude, longitude) # Allows us to pass in multiple arguments to `fetch_from_api`
+                        self.fetch_from_weather_api,
+                        *(session, param, latitude, longitude) # Allows us to pass in multiple arguments to `fetch_from_weather_api`
                     )
                     for param in params
                 ]
