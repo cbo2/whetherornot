@@ -121,7 +121,7 @@ class SignUpView(FormView):
             'precipIntensity',
             'precipIntensityMax',
             'visibility',
-            'sunriseTime',
+            # 'sunriseTime',
             'sunsetTime',
             ], axis=1)
         print(df)
@@ -168,9 +168,9 @@ class SignUpView(FormView):
         precip_image_filename = 'precip_image.png'
         precip_image_file = settings.MEDIA_ROOT + f'/{precip_image_filename}'
         fig2 = df.groupby(['monthday'])['precipProbability'].mean().plot(kind='bar').get_figure()
-        plt.xlabel('Week Of');
-        plt.ylabel('Precipitation');
-        plt.title('Precipitation');
+        plt.xlabel('Week Of')
+        plt.ylabel('Precipitation')
+        plt.title('Precipitation')
         fig2.savefig(precip_image_file, transparent=True)  # saves the current figure
 
         # cloudcover line graph
@@ -178,13 +178,17 @@ class SignUpView(FormView):
         cloudcover_image_filename = 'cloudcover_image.png'
         cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
         fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
-        plt.xlabel('');
-        plt.ylabel('Cloud Cover');
-        plt.title('Cloudiness');
+        plt.xlabel('')
+        plt.ylabel('Cloud Cover')
+        plt.title('Cloudiness')
         fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
 
         # result = hello(context)
         
+        # print('sunrise is: ', df.loc(1)['sunriseTime'])
+        # sunrise = dt.fromtimestamp(df.loc(1)['sunriseTime']).isoformat()
+        # context['sunrise'] = sunrise
+
         # f string format f'{value:{width}.{precision}}'
         context['predicted_temp'] = f"{df['temperatureHigh'].mean():3.0f}"
         context['temp_image'] = temp_image_filename
@@ -243,16 +247,16 @@ class SignUpView(FormView):
             (
                 str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            for year in range(from_year, to_year)
-            # for year in range(2014, 2017)
+            # for year in range(from_year, to_year)
+            for year in range(2014, 2017)
         ]
         # use a list comprehension to establish 20 years worth of query params for the target date minus a week
         minus_a_week = [
             (
                 str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            for year in range(from_year, to_year)
-            # for year in range(2016, 2017)
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
         ]
         params.extend(minus_a_week)
         # use a list comprehension to establish 20 years worth of query params for the target date minus 2 weeks
@@ -260,8 +264,8 @@ class SignUpView(FormView):
             (
                 str(year) + '-' + str(date_minus_2_weeks.month).zfill(2) + '-' + str(date_minus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            for year in range(from_year, to_year)
-            # for year in range(2016, 2017)
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
         ]
         params.extend(minus_2_weeks)
         # use a list comprehension to establish 20 years worth of query params for the target date plus a week
@@ -269,8 +273,8 @@ class SignUpView(FormView):
             (
                 str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            for year in range(from_year, to_year)
-            # for year in range(2016, 2017)
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
         ]
         params.extend(plus_a_week)
         # use a list comprehension to establish 20 years worth of query params for the target date plus 2 weeks
@@ -278,8 +282,8 @@ class SignUpView(FormView):
             (
                 str(year) + '-' + str(date_plus_2_weeks.month).zfill(2) + '-' + str(date_plus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            for year in range(from_year, to_year)
-            # for year in range(2016, 2017)
+            # for year in range(from_year, to_year)
+            for year in range(2016, 2017)
         ]
         params.extend(plus_2_weeks)
         print('*************************** params ************************')
@@ -305,7 +309,7 @@ class SignUpView(FormView):
                         print(type(resp_data))
                         print(resp_year)
                         print(resp_monthday)
-                        # need to add the response to the data_dict keyed by year...need monthday also
+                        # need to add the response to the data_dict keyed by year...need monthday also for aggregation/mean functions later
                         resp_data['monthday'] = resp_monthday
                         data_dict[num] = resp_data
                     except Exception as e:

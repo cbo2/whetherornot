@@ -3,13 +3,34 @@
 {% block title %}Result{% endblock title %}
 
 {% block content %}
-    <h1 align="center">Prediction</h1>
-    <br><br><br><br>
+    {% comment %} <h1 align="center">Prediction</h1>
+    <br><br><br><br> {% endcomment %}
+    <br><br>
     {% block body_content %}
         {% csrf_token %}
-        <h2>Date is:  {{ date     }}</h2>
-        <h2>Location is:  {{ location | capfirst }}</h2>
-        <h2>Predicted temp is:  {{ predicted_temp }}</h2>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    Date is:  {{ date     }}
+                </div>
+                <div class="col-sm">
+                    Location is:  {{ location | capfirst }}
+                </div>
+                <div class="col-sm">
+                    Predicted temp is:  {{ predicted_temp }}
+                </div>
+            </div>
+            {% comment %} <div class="row">
+                <div class="col-sm">
+                    Sunrise:  {{ sunrise }}
+                </div>
+                <div class="col-sm">
+                    Sunset:  {{ sunset }}
+                </div>
+                <div class="col-sm">
+                </div>
+            </div> {% endcomment %}
+        </div>
         <br><br>
         <span>
             <img src="{{MEDIA_URL}}{{ temp_image }}">
