@@ -52,12 +52,12 @@ class LocationForm(forms.Form):
 
 class HomePageView(TemplateView):
     # print('==========> HomePageView ======================')
-     template_name = 'home.html'
+     template_name = 'search.html'
 
 class SignUpView(FormView):
     form_class = CustomLocationForm
     # success_url = reverse_lazy('hello')
-    template_name = 'home.html'
+    template_name = 'search.html'
     dark_sky = os.environ["DARK_SKY"]
     geocoder_key = os.environ["GOOGLE_GEOCODE_KEY"]
 
@@ -184,7 +184,7 @@ class SignUpView(FormView):
         fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
 
         # result = hello(context)
-        
+
         # print('sunrise is: ', df.loc(1)['sunriseTime'])
         # sunrise = dt.fromtimestamp(df.loc(1)['sunriseTime']).isoformat()
         # context['sunrise'] = sunrise

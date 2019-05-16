@@ -13,7 +13,8 @@
 {% endif %} {% endcomment %}
     {% comment %} <div id="banner"> {% endcomment %}
       {% comment %} <div id="cloud-scroll"> {% endcomment %}
-        <h1 align="center" ">Welcome</h1>
+      {% if user.is_authenticated %}
+        <h1 align="center" ">Welcome {{ user.username }}</h1>
         <br><br><br><br>
         {% block body_content %}
           <form action="" method="post">
@@ -27,6 +28,13 @@
             </p> {% endcomment %}
           </form>
         {% endblock body_content %}
+      {% else %}
+        <div class="container" align="center">
+          <h2>You are not logged in<h2>
+          <a href="{% url 'login' %}">Log In</a> |  
+          <a href="{% url 'signup' %}">Sign Up</a>
+        </div>  
+      {% endif %} 
       {% comment %} </div> {% endcomment %}
   {% comment %} </div> {% endcomment %}
 {% endblock content %}
