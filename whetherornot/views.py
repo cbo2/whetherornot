@@ -143,6 +143,13 @@ class SearchView(FormView):
         # fig = ser.get_figure()
         print(f'after dataframe')
 
+        # adjust wind speeds by 10 for scale
+        df.loc[:,'windSpeed'] *= 10
+        # adjust precipy by 100 for scale
+        df.loc[:,'precipProbability'] *= 100
+        # adjust cloudiness by 100 for scale
+        df.loc[:,'cloudCover'] *= 100
+
         # high temp bar graph
         # print(df.groupby(['monthday'])['temperatureHigh'].mean())
         df2 = df.loc[:, ['monthday', 'temperatureHigh', 'humidity']]
@@ -152,8 +159,8 @@ class SearchView(FormView):
         temp_image_filename = 'temp_image.png'
         temp_image_file = settings.MEDIA_ROOT + f'/{temp_image_filename}'
         plt.xlabel('Week Of');
-        plt.ylabel('Temperature');
-        plt.title('High Temp');
+        plt.ylabel('Temp/Humity %');
+        plt.title('High Temp & Humidity');
         fig.savefig(temp_image_file, transparent=True)  # saves the current figure
 
         # wind line graph
@@ -162,7 +169,7 @@ class SearchView(FormView):
         wind_image_file = settings.MEDIA_ROOT + f'/{wind_image_filename}'
         fig2 = df.groupby(['monthday'])['windSpeed'].mean().plot(kind='line').get_figure()
         plt.xlabel('');
-        plt.ylabel('Wind');
+        plt.ylabel('Wind (mph)');
         plt.title('Wind Speed');
         fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
 
@@ -172,7 +179,7 @@ class SearchView(FormView):
         precip_image_file = settings.MEDIA_ROOT + f'/{precip_image_filename}'
         fig2 = df.groupby(['monthday'])['precipProbability'].mean().plot(kind='bar').get_figure()
         plt.xlabel('Week Of')
-        plt.ylabel('Precipitation')
+        plt.ylabel('Precipitation %')
         plt.title('Precipitation')
         fig2.savefig(precip_image_file, transparent=True)  # saves the current figure
 
@@ -182,7 +189,7 @@ class SearchView(FormView):
         cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
         fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
         plt.xlabel('')
-        plt.ylabel('Cloud Cover')
+        plt.ylabel('Cloud Cover %')
         plt.title('Cloudiness')
         fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
 
