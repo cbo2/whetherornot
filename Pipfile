@@ -12,7 +12,15 @@ whitenoise = "==3.3.1"
 Django = "==2.1"
 django-configurations = "==2.1"
 requests = "==2.21.0"
-
+pandas = "==0.24.2"
+aiohttp = "==3.5.4"   
+async-timeout = "==3.0.1"   
+future = "==0.17.1"  
+geocoder = "==1.38.1" 
+matplotlib = "==3.0.3"   
+multidict = "==4.5.2"  
+numpy = "==1.16.3"  
+python-dateutil = "==2.8.0"   
 
 [requires]
 python_version = "3.7"
