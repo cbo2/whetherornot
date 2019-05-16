@@ -126,7 +126,7 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.CustomUser'
 
 LOGIN_REDIRECT_URL = 'search'
-LOGOUT_REDIRECT_URL = 'signup'
+LOGOUT_REDIRECT_URL = 'search'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

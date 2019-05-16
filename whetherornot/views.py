@@ -54,7 +54,7 @@ class HomePageView(TemplateView):
     # print('==========> HomePageView ======================')
      template_name = 'search.html'
 
-class SignUpView(FormView):
+class SearchView(FormView):
     form_class = CustomLocationForm
     # success_url = reverse_lazy('hello')
     template_name = 'search.html'
