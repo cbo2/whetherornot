@@ -9,7 +9,18 @@ idea is __**whether or not**__ you shoud go to that destination on a given date 
 - python
 - django
 - APIs
-  - Translate city location to long/lat 
+  - Google Geocoder to translate city location to long/lat 
   - Dark Sky (Time Machine) historical data
 - pandas
-- sklearn (scikit-learn)
+
+# Python features utilized
+- list comprehensions to supply muliple parameters as variables to the weather API
+- mulitthreading so we can hit the weather API in parallel dramatically improving overall response time
+- datetime module to both subtract and add weeks from the target date
+- pandas and plotting 
+- json module to work with the returned weather data  
+- django's templating and filtering 
+- requests module to hit the geocoder and weather APIs
+- async methods and await in conjuction with ThreadPoolExecutor to facilitate multithreading 
+- private methods 
+- exception handling (try/except blocks)

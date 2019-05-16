@@ -3,38 +3,21 @@
 {% block title %}Home{% endblock title %}
 
 {% block content %}
-{% comment %} {% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a> |  
-  <a href="{% url 'signup' %}">Sign Up</a>
-{% endif %} {% endcomment %}
-    {% comment %} <div id="banner"> {% endcomment %}
-      {% comment %} <div id="cloud-scroll"> {% endcomment %}
-      {% if user.is_authenticated %}
-        <h1 align="center" ">Welcome {{ user.username }}</h1>
-        <br><br><br><br>
-        {% block body_content %}
-          <form action="" method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Check Weather" />
-            {% comment %} <p alig="center">
-              <label for="id_location">Location:</label>
-              <textarea name="location" id="id_location" required></textarea>
-              <input type="submit" value="Check Weather" />
-            </p> {% endcomment %}
-          </form>
-        {% endblock body_content %}
-      {% else %}
-        <div class="container" align="center">
-          <h2>You are not logged in<h2>
-          <a href="{% url 'login' %}">Log In</a> |  
-          <a href="{% url 'signup' %}">Sign Up</a>
-        </div>  
-      {% endif %} 
-      {% comment %} </div> {% endcomment %}
-  {% comment %} </div> {% endcomment %}
+  {% if user.is_authenticated %}
+    <h1 align="center" ">Welcome {{ user.username }}</h1>
+    <br><br><br><br>
+    {% block body_content %}
+      <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Check Weather" />
+      </form>
+    {% endblock body_content %}
+  {% else %}
+    <div class="container" align="center">
+      <h2>You are not logged in<h2>
+      <a href="{% url 'login' %}">Log In</a> |  
+      <a href="{% url 'signup' %}">Sign Up</a>
+    </div>  
+  {% endif %} 
 {% endblock content %}

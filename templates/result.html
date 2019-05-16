@@ -3,8 +3,6 @@
 {% block title %}Result{% endblock title %}
 
 {% block content %}
-    {% comment %} <h1 align="center">Prediction</h1>
-    <br><br><br><br> {% endcomment %}
     <br><br>
     {% block body_content %}
         {% csrf_token %}
@@ -20,16 +18,6 @@
                     Predicted temp is:  {{ predicted_temp }}
                 </div>
             </div>
-            {% comment %} <div class="row">
-                <div class="col-sm">
-                    Sunrise:  {{ sunrise }}
-                </div>
-                <div class="col-sm">
-                    Sunset:  {{ sunset }}
-                </div>
-                <div class="col-sm">
-                </div>
-            </div> {% endcomment %}
         </div>
         <br><br>
         <span>
