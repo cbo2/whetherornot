@@ -92,7 +92,7 @@ class SearchView(FormView):
         print('----------------------dataframe end------------------------------------')
 
         # adjust wind speeds by 10 for scale
-        df.loc[:,'windSpeed'] *= 10
+        # df.loc[:,'windSpeed'] *= 10
         # adjust precipy by 100 for scale
         df.loc[:,'precipProbability'] *= 100
         # adjust cloudiness by 100 for scale
@@ -177,16 +177,16 @@ class SearchView(FormView):
             (
                 str(year) + '-' + str(target_date.month).zfill(2) + '-' + str(target_date.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2014, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2014, 2017)
         ]
         # use a list comprehension to establish 20 years worth of query params for the target date minus a week
         minus_a_week = [
             (
                 str(year) + '-' + str(date_minus_a_week.month).zfill(2) + '-' + str(date_minus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(minus_a_week)
         # use a list comprehension to establish 20 years worth of query params for the target date minus 2 weeks
@@ -194,8 +194,8 @@ class SearchView(FormView):
             (
                 str(year) + '-' + str(date_minus_2_weeks.month).zfill(2) + '-' + str(date_minus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(minus_2_weeks)
         # use a list comprehension to establish 20 years worth of query params for the target date plus a week
@@ -203,8 +203,8 @@ class SearchView(FormView):
             (
                 str(year) + '-' + str(date_plus_a_week.month).zfill(2) + '-' + str(date_plus_a_week.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(plus_a_week)
         # use a list comprehension to establish 20 years worth of query params for the target date plus 2 weeks
@@ -212,8 +212,8 @@ class SearchView(FormView):
             (
                 str(year) + '-' + str(date_plus_2_weeks.month).zfill(2) + '-' + str(date_plus_2_weeks.day).zfill(2) + 'T15:00:00?units=us&exclude=currently,flags'
             )
-            # for year in range(from_year, to_year)
-            for year in range(2016, 2017)
+            for year in range(from_year, to_year)
+            # for year in range(2016, 2017)
         ]
         params.extend(plus_2_weeks)
         with ThreadPoolExecutor(max_workers=20) as executor:
