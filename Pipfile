@@ -8,6 +8,8 @@ rope = "*"
 
 [packages]
 gunicorn = "==19.9.0"
+whitenoise = "==3.3.1"
+python-app = "*"
 
 [requires]
 python_version = "3.7"
