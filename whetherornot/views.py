@@ -145,7 +145,10 @@ class SearchView(FormView):
 
         # high temp bar graph
         # print(df.groupby(['monthday'])['temperatureHigh'].mean())
-        fig = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar').get_figure()
+        df2 = df.loc[:, ['monthday', 'temperatureHigh', 'humidity']]
+        df2.loc[:,'humidity'] *= 100   # need to mulitply humidity * 100 for scale
+        fig = df2.groupby(['monthday']).mean().plot(kind='bar').get_figure()
+        # fig = df.groupby(['monthday'])['temperatureHigh'].mean().plot(kind='bar').get_figure()
         temp_image_filename = 'temp_image.png'
         temp_image_file = settings.MEDIA_ROOT + f'/{temp_image_filename}'
         plt.xlabel('Week Of');
