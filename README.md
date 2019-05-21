@@ -8,7 +8,7 @@ idea is __**whether or not**__ you shoud go to that destination on a given date 
 # NOTE
 __While I a plan to deploy to heroku and have a url available to use the app, until that happens if you would like to run it localhost you can clone the project and then run:
 
-python manage.py runserver__
+    python manage.py runserver__
 
 
 # technologies
