@@ -6,9 +6,9 @@ desired destination in advance and then change the date to better align with you
 idea is __**whether or not**__ you shoud go to that destination on a given date __or switch it to another date__.  A little play on words.....yes, we know the difference between weather and whether ;-)
 
 # NOTE
-__While I a plan to deploy to heroku and have a url available to use the app, until that happens if you would like to run it localhost you can clone the project and then run:
+__While I a plan to deploy to heroku and have a url available to use the app, until that happens if you would like to run it localhost you can clone the project and then run:__
 
-    python manage.py runserver__
+    python manage.py runserver
 
 
 # technologies
