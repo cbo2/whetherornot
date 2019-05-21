@@ -5,6 +5,11 @@ you may wish you had planned your trip at another date.  This app will help you 
 desired destination in advance and then change the date to better align with your weather desires.  So, the 
 idea is __**whether or not**__ you shoud go to that destination on a given date __or switch it to another date__.  A little play on words.....yes, we know the difference between weather and whether ;-)
 
+** NOTE**
+While I a plan to deploy to heroku and have a url available to use the app, until that happens if you would like to run it localhost you can download the project and then run:
+python manage.py runserver
+
+
 # technologies
 - python
 - django
