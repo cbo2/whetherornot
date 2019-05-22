@@ -25,8 +25,8 @@ SECRET_KEY = 'wnp5uu3)!x!il3fb-c9s^_p1ee9k1fh2%10n^dolxa-e9txmig'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'whetherornot.herokuapp.com', '[::1]']
 
 # Application definition
 
@@ -122,6 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 STATICFILES_DIR = [os.path.join(BASE_DIR, 'static')]
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = STATICFILES_DIR
 
 STATIC_URL = '/static/'
 AUTH_USER_MODEL = 'users.CustomUser'
