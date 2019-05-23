@@ -1,4 +1,4 @@
-# whetherornot 
+# whetherornot
 In a nutshell, this app will allow the user a clean interface to check weather for a future dated vacation.
 The idea here is that if you are planning a significant vacation in advance and knew the weather stats,
 you may wish you had planned your trip at another date.  This app will help you predict the weather for your
