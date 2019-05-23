@@ -23,10 +23,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'wnp5uu3)!x!il3fb-c9s^_p1ee9k1fh2%10n^dolxa-e9txmig'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'whetherornot.herokuapp.com', '[::1]']
+ALLOWED_HOSTS = ['whetherornot.herokuapp.com', 'localhost', '127.0.0.1',  '[::1]']
 
 # Application definition
 
@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 
