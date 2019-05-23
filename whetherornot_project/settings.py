@@ -26,7 +26,7 @@ SECRET_KEY = 'wnp5uu3)!x!il3fb-c9s^_p1ee9k1fh2%10n^dolxa-e9txmig'
 DEBUG = False
 
 # ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['whetherornot.herokuapp.com', 'localhost', '127.0.0.1',  '[::1]']
+ALLOWED_HOSTS = ['whetherornot.herokuapp.com', 'localhost', '0.0.0.0',  '[::1]']
 
 # Application definition
 
