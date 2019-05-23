@@ -1,2 +1,2 @@
-web: gunicorn whetherornot_project.wsgi:main --log-file -
+web: gunicorn whetherornot_project.wsgi --log-file -
 web: python manage.py runserver
