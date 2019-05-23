@@ -8,6 +8,7 @@ cycler==0.10.0
 decorator==4.4.0
 dj-database-url==0.5.0
 Django==2.1.5
+django-heroku=0.3.1
 future==0.17.1
 geocoder==1.38.1
 gunicorn==19.9.0
