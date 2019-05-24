@@ -139,3 +139,6 @@ GOOGLE_GEOCODE_KEY = os.environ['GOOGLE_GEOCODE_KEY']
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+# Configure Django App for Heroku.
+import django_heroku
+django_heroku.settings(locals())
