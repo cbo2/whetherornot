@@ -2,3 +2,6 @@ django
 gunicorn
 pandas
 matplotlib
+geocoder
+python-dateutil
+requests
