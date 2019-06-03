@@ -6,3 +6,4 @@ geocoder
 python-dateutil
 requests
 whitenoise
+selenium
