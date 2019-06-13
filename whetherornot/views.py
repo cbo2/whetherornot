@@ -113,11 +113,14 @@ class SearchView(FormView):
         plt.clf()       # first need to clear the plot
         wind_image_filename = 'wind_image.png'
         wind_image_file = settings.MEDIA_ROOT + f'/{wind_image_filename}'
-        fig2 = df.groupby(['monthday'])['windGust'].mean().plot(kind='line').get_figure()
-        plt.xlabel('');
-        plt.ylabel('Wind (mph)');
-        plt.title('Wind Speed');
-        fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
+        try: 
+            fig2 = df.groupby(['monthday'])['windGust'].mean().plot(kind='line').get_figure()
+            plt.xlabel('');
+            plt.ylabel('Wind (mph)');
+            plt.title('Wind Speed');
+            fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
+        except Exception as e:
+            wind_image_filename = "generic_chart.jpg"
 
         # precip bar graph
         plt.clf()       # first need to clear the plot
