@@ -99,15 +99,19 @@ class SearchView(FormView):
         df.loc[:,'cloudCover'] *= 100
 
         # high temp bar graph
-        df2 = df.loc[:, ['monthday', 'temperatureHigh', 'humidity']]
-        df2.loc[:,'humidity'] *= 100   # need to mulitply humidity * 100 for scale
-        fig = df2.groupby(['monthday']).mean().plot(kind='bar').get_figure()
-        temp_image_filename = 'temp_image.png'
-        temp_image_file = settings.MEDIA_ROOT + f'/{temp_image_filename}'
-        plt.xlabel('Week Of');
-        plt.ylabel('Temp/Humity %');
-        plt.title('High Temp & Humidity');
-        fig.savefig(temp_image_file, transparent=True)  # saves the current figure
+        try: 
+            df2 = df.loc[:, ['monthday', 'temperatureHigh', 'humidity']]
+            df2.loc[:,'humidity'] *= 100   # need to mulitply humidity * 100 for scale
+            fig = df2.groupby(['monthday']).mean().plot(kind='bar').get_figure()
+            temp_image_filename = 'temp_image.png'
+            temp_image_file = settings.MEDIA_ROOT + f'/{temp_image_filename}'
+            plt.xlabel('Week Of');
+            plt.ylabel('Temp/Humity %');
+            plt.title('High Temp & Humidity');
+            fig.savefig(temp_image_file, transparent=True)  # saves the current figure
+        except Exception as e:
+            temp_image_filename = "default_temp.jpg"
+
 
         # wind line graph
         plt.clf()       # first need to clear the plot
@@ -120,27 +124,33 @@ class SearchView(FormView):
             plt.title('Wind Speed');
             fig2.savefig(wind_image_file, transparent=True)  # saves the current figure
         except Exception as e:
-            wind_image_filename = "generic_chart.jpg"
+            wind_image_filename = "default_wind.jpg"
 
         # precip bar graph
-        plt.clf()       # first need to clear the plot
-        precip_image_filename = 'precip_image.png'
-        precip_image_file = settings.MEDIA_ROOT + f'/{precip_image_filename}'
-        fig2 = df.groupby(['monthday'])['precipProbability'].mean().plot(kind='bar').get_figure()
-        plt.xlabel('Week Of')
-        plt.ylabel('Precipitation %')
-        plt.title('Precipitation')
-        fig2.savefig(precip_image_file, transparent=True)  # saves the current figure
+        try: 
+            plt.clf()       # first need to clear the plot
+            precip_image_filename = 'precip_image.png'
+            precip_image_file = settings.MEDIA_ROOT + f'/{precip_image_filename}'
+            fig2 = df.groupby(['monthday'])['precipProbability'].mean().plot(kind='bar').get_figure()
+            plt.xlabel('Week Of')
+            plt.ylabel('Precipitation %')
+            plt.title('Precipitation')
+            fig2.savefig(precip_image_file, transparent=True)  # saves the current figure
+        except Exception as e:
+            wind_image_filename = "default_precip.jpg"
 
         # cloudcover line graph
-        plt.clf()       # first need to clear the plot
-        cloudcover_image_filename = 'cloudcover_image.png'
-        cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
-        fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
-        plt.xlabel('')
-        plt.ylabel('Cloud Cover %')
-        plt.title('Cloudiness')
-        fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
+        try:
+            plt.clf()       # first need to clear the plot
+            cloudcover_image_filename = 'cloudcover_image.png'
+            cloudcover_image_file = settings.MEDIA_ROOT + f'/{cloudcover_image_filename}'
+            fig2 = df.groupby(['monthday'])['cloudCover'].mean().plot(kind='line').get_figure()
+            plt.xlabel('')
+            plt.ylabel('Cloud Cover %')
+            plt.title('Cloudiness')
+            fig2.savefig(cloudcover_image_file, transparent=True)  # saves the current figure
+        except Exception as e:
+            cloudcover_image_filename = "default_cloud_cover.jpg"
 
         # print('sunrise is: ', df.loc(1)['sunriseTime'])
         # sunrise = dt.fromtimestamp(df.loc(1)['sunriseTime']).isoformat()
