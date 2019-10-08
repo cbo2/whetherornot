@@ -36,6 +36,7 @@ class SearchView(FormView):
         location = form.cleaned_data['location']
         result = geocoder.google(location, key=self.geocoder_key)
         # get the probably location from Google since the user may have given an abbreviated location
+        print(f'-------------------- RESULT -------------------')
         print(f'result is: {result}')
         location = result.geojson['features'][0]['properties']['address']
         print(f'lat is: {result.lat}  long is: {result.lng}')
