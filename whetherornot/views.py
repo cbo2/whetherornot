@@ -34,10 +34,15 @@ class SearchView(FormView):
         print('----------- form_valid --------------')
  
         location = form.cleaned_data['location']
-        result = geocoder.google(location, key=self.geocoder_key)
-        # get the probably location from Google since the user may have given an abbreviated location
-        print(f'-------------------- RESULT -------------------')
-        print(f'result is: {result}')
+        try:
+            result = geocoder.google(location, key=self.geocoder_key)
+        except Exception as e:
+            print(f'====> Exception is: {e} and type is: {type(e)}')
+        else:
+            # get the probably location from Google since the user may have given an abbreviated location
+            print(f'-------------------- RESULT -------------------')
+            print(f'result is: {result}')
+            
         location = result.geojson['features'][0]['properties']['address']
         print(f'lat is: {result.lat}  long is: {result.lng}')
         longitude = result.lng
